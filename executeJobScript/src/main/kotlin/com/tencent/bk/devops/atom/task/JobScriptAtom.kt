@@ -21,8 +21,6 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
     private var appId: String = ""
     private var appSecret: String = ""
 
-    // TODO:1.支持分发的多个目标源   2.完成、异常都需要删除中间文件。  3.下载路径为明文，是否需要处理   4.下载路径定义指定workspace？
-
     override fun execute(atomContext: AtomContext<InnerJobParam>) {
         val param = atomContext.param
         logger.info("param:${JsonUtil.toJson(param)}")
@@ -42,7 +40,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         if (!checkVariable(jobHost, appId, appSecret)) {
             throw RuntimeException("请联系管理员，配置插件私有配置")
         }
-        this.jobHost = jobHost!!
+        this.jobHost = jobHost!!.trim().trimEnd('/')
         this.appId = appId!!
         this.appSecret = appSecret!!
 
