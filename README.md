@@ -1,5 +1,4 @@
-# executeJobScript
-蓝鲸作业平台Job-脚本执行(GITHUB版)
+# Job-脚本执行(GITHUB版)
 
 # 配置
 插件上架时，需要配置蓝鲸智云相关参数，路径：设置->私有配置
