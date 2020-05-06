@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 class JobScriptAtom : TaskAtom<InnerJobParam> {
 
     private var jobHost: String = ""
+    private var esbApiHost: String = ""
     private var appId: String = ""
     private var appSecret: String = ""
 
@@ -34,6 +35,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
     fun exceute(param: InnerJobParam) {
         logger.info("开始执行脚本")
+        val esbHost = getConfigValue(Keys.ESB_HOST, param)
         val jobHost = getConfigValue(Keys.JOB_HOST, param)
         val appId = getConfigValue(Keys.BK_APP_ID, param)
         val appSecret = getConfigValue(Keys.BK_APP_SECRET, param)
@@ -41,6 +43,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             throw RuntimeException("请联系管理员，配置插件私有配置")
         }
         this.jobHost = jobHost!!.trim().trimEnd('/')
+        this.esbApiHost = esbHost!!.trim().trimEnd('/')
         this.appId = appId!!
         this.appSecret = appSecret!!
 
@@ -95,7 +98,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             ipList = ipList
         )
 
-        val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.jobHost)
+        val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.esbApiHost)
         val startTime = System.currentTimeMillis()
 
         checkStatus(
@@ -105,7 +108,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             taskInstanceId = taskInstanceId,
             operator = operator,
             buildId = buildId,
-            jobHost = jobHost
+            jobHost = esbApiHost
         )
 
         logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
