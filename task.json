@@ -9,17 +9,17 @@
   },
   "input": {
     "bizId": {
-      "label": "业务 ID",
+      "label": "Biz ID",
       "default": "",
       "type": "vuex-input",
-      "desc": "Job 中登记的业务 ID",
+      "desc": "Job register biz ID",
       "required": true,
       "disabled": false,
       "hidden": false,
       "isSensitive": false
     },
     "scriptType": {
-      "label": "脚本类型",
+      "label": "scriptType",
       "default": "1",
       "placeholder": "",
       "type": "enum-input",
@@ -52,7 +52,7 @@
       "isSensitive": false
     },
     "scriptContent": {
-      "label": "脚本内容",
+      "label": "scriptContent",
       "default": "",
       "placeholder": "",
       "type": "atom-ace-editor",
@@ -63,21 +63,21 @@
       "isSensitive": false
     },
     "scriptParam": {
-      "label": "脚本参数",
+      "label": "scriptParam",
       "default": "",
-      "desc": "脚本执行参数，多个参数用空格分隔。示例: param1 param2",
+      "desc": "script execute param，multi param user \"\" split .eg: param1 param2",
       "type": "vuex-input",
       "required": false
     },
     "timeout": {
-      "label": "超时时间",
+      "label": "timeout",
       "default": "1000",
       "type": "vuex-input",
-      "desc": "请输入脚本执行超时时间，单位为秒，范围60-72000，默认1000",
+      "desc": "please input script timeout, The unit is second, Interval:60-72000，default:1000",
       "required": true
     },
     "account": {
-      "label": "执行账号",
+      "label": "account",
       "default": "root",
       "placeholder": "",
       "type": "vuex-input",
@@ -88,26 +88,25 @@
       "isSensitive": false
     },
     "targetEnvType": {
-      "label": "目标机(非编译机)",
+      "label": "targetEnvType",
       "default": "MANUAL",
       "type": "enum-input",
       "required": true,
-      "desc": "手工录入: 手工录入节点云区域和 IP 地址  ",
+      "desc": "manual input:cloud note region and ip host, multiple param user \",\" split",
       "disabled": false,
       "hidden": false,
       "isSensitive": false,
       "list": [
         {
-          "label": "手工录入",
+          "label": "manual",
           "value": "MANUAL"
         }
       ]
     },
     "targetIpList": {
-      "label": "手工录入(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔",
+      "label": "manual input cloud region, eg: 82:172.1.2.3",
       "default": "",
-      "placeholder": "请输入目标 IP 列表(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔",
-      "desc": "云区域ID:IP\n如：82:172.1.2.3\n多个ip之间用,;换行符中的任意一个进行分隔",
+      "placeholder": "please input target ip list \n eg: 82:172.1.2.3, multiple ip user either comma or semicolon to separete IPs",
       "type": "vuex-textarea",
       "required": true,
       "disabled": false,

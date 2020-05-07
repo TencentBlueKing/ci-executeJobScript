@@ -25,7 +25,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
     override fun execute(atomContext: AtomContext<InnerJobParam>) {
         val param = atomContext.param
         logger.info("param:${JsonUtil.toJson(param)}")
-        exceute(param)
+        execute(param)
         logger.info("atom run success")
     }
 
@@ -33,14 +33,14 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         val logger = LoggerFactory.getLogger(JobScriptAtom::class.java)
     }
 
-    fun exceute(param: InnerJobParam) {
-        logger.info("开始执行脚本")
+    fun execute(param: InnerJobParam) {
+        logger.info("start execute atom")
         val esbHost = getConfigValue(Keys.ESB_HOST, param)
         val jobHost = getConfigValue(Keys.JOB_HOST, param)
         val appId = getConfigValue(Keys.BK_APP_ID, param)
         val appSecret = getConfigValue(Keys.BK_APP_SECRET, param)
         if (!checkVariable(jobHost, appId, appSecret)) {
-            throw RuntimeException("请联系管理员，配置插件私有配置")
+            throw RuntimeException("please contact administrator, add config for this atom")
         }
         this.jobHost = jobHost!!.trim().trimEnd('/')
         this.esbApiHost = esbHost!!.trim().trimEnd('/')
@@ -70,7 +70,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             operator = lastModifyUser
         }
         val targetEnvType = param.targetEnvType
-        logger.info("获取节点类型：$targetEnvType")
+        logger.info("get note type：$targetEnvType")
         val ipList = when (targetEnvType) {
             "MANUAL" -> {
                 if (param.targetIpList.isEmpty()) {
@@ -138,16 +138,16 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
                     throw RuntimeException("job execute fail, mssage:${taskResult.msg}")
                 }
             } else {
-                logger.info("执行中/Waiting for job:$taskInstanceId", taskId)
+                logger.info("Running/Waiting for job:$taskInstanceId", taskId)
             }
         }
-        logger.info("job执行耗时：${System.currentTimeMillis() - startTime}")
+        logger.info("job execute Time：${System.currentTimeMillis() - startTime}")
     }
 
     private fun getConfigValue(key: String, param: InnerJobParam): String? {
         val configMap = param.bkSensitiveConfInfo
         if (configMap == null) {
-            logger.warn("插件私有配置为空，请补充配置")
+            logger.warn("atom config is empty，please add config")
         }
         if (configMap.containsKey(key)) {
             return configMap[key]
@@ -157,15 +157,15 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
     private fun checkVariable(jobHost: String?, appId: String?, appSecret: String?): Boolean {
         if (jobHost.isNullOrBlank()) {
-            logger.error("请补充插件 Job Host 配置")
+            logger.error("please add atom config: Job Host ")
             return false
         }
         if (appId.isNullOrBlank()) {
-            logger.error("请补充插件 Bk App Id 配置")
+            logger.error("please add atom config:  Bk App Id")
             return false
         }
         if (appSecret.isNullOrBlank()) {
-            logger.error("请补充插件 Bk App Secret 配置")
+            logger.error("please add atom config:  Bk App Secret")
             return false
         }
         return true
