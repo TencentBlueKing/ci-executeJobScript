@@ -100,6 +100,10 @@
         {
           "label": "手工录入",
           "value": "MANUAL"
+        },
+        {
+          "label": "动态分组",
+          "value": "DYNAMIC_GROUP"
         }
       ]
     },
@@ -119,6 +123,26 @@
           {
             "key": "targetEnvType",
             "value": "MANUAL"
+          }
+        ]
+      }
+    },
+    "dynamicGroupIdList": {
+      "label": "动态分组ID（从CMDB获取）列表，多个ID之间用,;换行符中的任意一个进行分隔",
+      "default": "",
+      "placeholder": "请输入动态分组ID（从CMDB获取）列表\n如：brcfabc2si9h3j4v3qb1，多个ID之间用,;换行符中的任意一个进行分隔",
+      "desc": "动态分组ID\n如：brcfabc2si9h3j4v3qb1\n多个ID之间用,;换行符中的任意一个进行分隔",
+      "type": "vuex-textarea",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "isSensitive": false,
+      "rely": {
+        "operation": "AND",
+        "expression": [
+          {
+            "key": "targetEnvType",
+            "value": "DYNAMIC_GROUP"
           }
         ]
       }

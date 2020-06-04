@@ -16,4 +16,5 @@ class InnerJobParam : AtomBaseParam() {
     val account: String = ""
     val targetEnvType: String = ""
     val targetIpList: String = ""
+    val dynamicGroupIdList: String = ""
 }

@@ -1,4 +1,3 @@
-
 package com.tencent.bk.devops.atom.task
 
 import com.tencent.bk.devops.atom.AtomContext
@@ -70,15 +69,25 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             operator = lastModifyUser
         }
         val targetEnvType = param.targetEnvType
+        val dynamicGroupIdListStr = param.dynamicGroupIdList
         logger.info("获取节点类型：$targetEnvType")
-        val ipList = when (targetEnvType) {
+        var ipList = emptyList<IpDTO>()
+        var dynamicGroupIdList = emptyList<String>()
+        when (targetEnvType) {
             "MANUAL" -> {
                 if (param.targetIpList.isEmpty()) {
                     throw RuntimeException("IpList is not init")
                 }
-                val ipList = param.targetIpList.trim().split(",", ";", "\n")
-                logger.info("targetIpList:$ipList")
-                ipList.map { IpDTO(it.split(":")[1], it.split(":")[0].toLong()) }
+                val ipArr = param.targetIpList.trim().split(",", "，", ";", "\n")
+                logger.info("targetIpList:$ipArr")
+                ipList = ipArr.map { IpDTO(it.split(":")[1].trim(), it.split(":")[0].trim().toLong()) }
+            }
+            "DYNAMIC_GROUP" -> {
+                if (dynamicGroupIdListStr.isEmpty()) {
+                    throw RuntimeException("dynamicGroupIdListStr is not init")
+                }
+                dynamicGroupIdList = dynamicGroupIdListStr.trim().split(",", "，", ";", "\n")
+                logger.info("dynamicGroupIdList:$dynamicGroupIdList")
             }
             else -> {
                 throw RuntimeException("Unsupported targetEnvType: $targetEnvType")
@@ -95,6 +104,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             scriptContent = scriptContent,
             scriptParam = scriptParam,
             scriptTimeout = timeout,
+            dynamicGroupIdList = dynamicGroupIdList,
             ipList = ipList
         )
 
