@@ -33,13 +33,13 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
     }
 
     fun exceute(param: InnerJobParam) {
-        logger.info("开始执行脚本")
+        logger.info("开始执行脚本(Begin to execute script)")
         val esbHost = getConfigValue(Keys.ESB_HOST, param)
         val jobHost = getConfigValue(Keys.JOB_HOST, param)
         val appId = getConfigValue(Keys.BK_APP_ID, param)
         val appSecret = getConfigValue(Keys.BK_APP_SECRET, param)
         if (!checkVariable(jobHost, appId, appSecret)) {
-            throw RuntimeException("请联系管理员，配置插件私有配置")
+            throw RuntimeException("请联系管理员，配置插件私有配置(Please contact administrator to init plugin private configuration)")
         }
         this.jobHost = jobHost!!.trim().trimEnd('/')
         this.esbApiHost = esbHost!!.trim().trimEnd('/')
@@ -70,7 +70,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         }
         val targetEnvType = param.targetEnvType
         val dynamicGroupIdListStr = param.dynamicGroupIdList
-        logger.info("获取节点类型：$targetEnvType")
+        logger.info("获取节点类型(targetEnvType)：$targetEnvType")
         var ipList = emptyList<IpDTO>()
         var dynamicGroupIdList = emptyList<String>()
         when (targetEnvType) {
@@ -151,13 +151,13 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
                 logger.info("执行中/Waiting for job:$taskInstanceId", taskId)
             }
         }
-        logger.info("job执行耗时：${System.currentTimeMillis() - startTime}")
+        logger.info("job执行耗时(Time consuming)：${System.currentTimeMillis() - startTime}")
     }
 
     private fun getConfigValue(key: String, param: InnerJobParam): String? {
         val configMap = param.bkSensitiveConfInfo
         if (configMap == null) {
-            logger.warn("插件私有配置为空，请补充配置")
+            logger.warn("插件私有配置为空，请补充配置(Plugin private configuration is null, please config it)")
         }
         if (configMap.containsKey(key)) {
             return configMap[key]
@@ -167,15 +167,15 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
     private fun checkVariable(jobHost: String?, appId: String?, appSecret: String?): Boolean {
         if (jobHost.isNullOrBlank()) {
-            logger.error("请补充插件 Job Host 配置")
+            logger.error("请补充插件 Job Host 配置(Please config plugin private configuration:JOB_HOST)")
             return false
         }
         if (appId.isNullOrBlank()) {
-            logger.error("请补充插件 Bk App Id 配置")
+            logger.error("请补充插件 Bk App Id 配置(Please config plugin private configuration:BK_APP_ID)")
             return false
         }
         if (appSecret.isNullOrBlank()) {
-            logger.error("请补充插件 Bk App Secret 配置")
+            logger.error("请补充插件 Bk App Secret 配置(Please config plugin private configuration:BK_APP_SECRET)")
             return false
         }
         return true
