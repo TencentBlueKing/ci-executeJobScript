@@ -102,20 +102,32 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             ipList = ipDTOList
         )
 
-        val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.esbApiHost)
-        val startTime = System.currentTimeMillis()
+        try {
+            val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.esbApiHost)
+            val startTime = System.currentTimeMillis()
 
-        checkStatus(
-            bizId = bizId,
-            startTime = startTime,
-            taskId = taskId,
-            taskInstanceId = taskInstanceId,
-            operator = operator,
-            buildId = buildId,
-            jobHost = esbApiHost
-        )
+            checkStatus(
+                bizId = bizId,
+                startTime = startTime,
+                taskId = taskId,
+                taskInstanceId = taskInstanceId,
+                operator = operator,
+                buildId = buildId,
+                jobHost = esbApiHost
+            )
 
-        logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
+            logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
+        } catch (e: Exception) {
+            logger.error("Job API invoke failed", e)
+            if (e.message != null && e.message!!.contains("permission")) {
+                logger.info("====================================================")
+                logger.info("看这里！(Attention Please!)")
+                logger.info("看这里！(Attention Please!)")
+                logger.info("看这里！(Attention Please!)")
+                logger.info("====================================================")
+                logger.info("Job插件使用流水线最后一次保存人的身份调用作业平台接口，请使用有权限的用户身份保存流水线，权限可到蓝鲸权限中心申请(Job plugin invoke Job API with last modifier of this pipeline, please ensure the last modifier has perssion to access the business on Job, user can apply authorization using Blueking Authorization Center, which is on Blueking Desktop)")
+            }
+        }
     }
 
     private fun checkStatus(
