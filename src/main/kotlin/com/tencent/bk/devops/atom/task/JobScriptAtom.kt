@@ -9,6 +9,7 @@ import com.tencent.bk.devops.atom.task.pojo.IpDTO
 import com.tencent.bk.devops.atom.task.utils.JobUtils
 import com.tencent.bk.devops.atom.task.utils.Keys
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
+import org.apache.commons.lang3.StringUtils
 import java.nio.charset.Charset
 import java.util.Base64
 import org.slf4j.LoggerFactory
@@ -68,32 +69,25 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             logger.info("operator:$operator, lastModifyUser:$lastModifyUser")
             operator = lastModifyUser
         }
-        val targetEnvType = param.targetEnvType
         val dynamicGroupIdListStr = param.dynamicGroupIdList
-        logger.info("获取节点类型(targetEnvType)：$targetEnvType")
-        var ipList = emptyList<IpDTO>()
+        var ipDTOList = emptyList<IpDTO>()
         var dynamicGroupIdList = emptyList<String>()
-        when (targetEnvType) {
-            "MANUAL" -> {
-                if (param.targetIpList.isEmpty()) {
-                    throw RuntimeException("IpList is not init")
-                }
-                val ipArr = param.targetIpList.trim().split(",", "，", ";", "\n")
-                logger.info("targetIpList:$ipArr")
-                ipList = ipArr.map { IpDTO(it.split(":")[1].trim(), it.split(":")[0].trim().toLong()) }
-            }
-            "DYNAMIC_GROUP" -> {
-                if (dynamicGroupIdListStr.isEmpty()) {
-                    throw RuntimeException("dynamicGroupIdListStr is not init")
-                }
-                dynamicGroupIdList = dynamicGroupIdListStr.trim().split(",", "，", ";", "\n")
-                logger.info("dynamicGroupIdList:$dynamicGroupIdList")
-            }
-            else -> {
-                throw RuntimeException("Unsupported targetEnvType: $targetEnvType")
-            }
+        if (param.targetIpList.isEmpty()) {
+            logger.info("IpList is empty")
+        } else {
+            val ipList = param.targetIpList.trim().split(",", "，", ";", "\n").filter(StringUtils::isNotBlank).toList()
+            logger.info("targetIpList:$ipList")
+            ipDTOList = ipList.map { IpDTO(it.split(":", "：")[1].trim(), it.split(":", "：")[0].trim().toLong()) }
         }
-
+        if (dynamicGroupIdListStr.isEmpty()) {
+            logger.info("dynamicGroupIdListStr is empty")
+        } else {
+            dynamicGroupIdList = dynamicGroupIdListStr.trim().split(",", "，", ";", "\n").filter(StringUtils::isNotBlank).toList()
+        }
+        logger.info("dynamicGroupIdList:$dynamicGroupIdList")
+        if (ipDTOList.isEmpty() && dynamicGroupIdList.isEmpty()) {
+            throw RuntimeException("At least one of ipList/dynamicGroupIdList required")
+        }
         val fastExecuteScriptReq = FastExecuteScriptRequest(
             appCode = this.appId,
             appSecret = this.appSecret,
@@ -105,7 +99,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             scriptParam = scriptParam,
             scriptTimeout = timeout,
             dynamicGroupIdList = dynamicGroupIdList,
-            ipList = ipList
+            ipList = ipDTOList
         )
 
         val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.esbApiHost)

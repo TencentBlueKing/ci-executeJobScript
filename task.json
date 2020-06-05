@@ -87,45 +87,16 @@
       "hidden": false,
       "isSensitive": false
     },
-    "targetEnvType": {
-      "label": "目标机(非编译机)(Target Machines, must not be Build-Machine)",
-      "default": "MANUAL",
-      "type": "enum-input",
-      "required": true,
-      "desc": "手工录入: 手工录入节点云区域和 IP 地址(Manual: Input cloud area id and ip manually)",
-      "disabled": false,
-      "hidden": false,
-      "isSensitive": false,
-      "list": [
-        {
-          "label": "手工录入(Manual)",
-          "value": "MANUAL"
-        },
-        {
-          "label": "动态分组(Dynamic Group)",
-          "value": "DYNAMIC_GROUP"
-        }
-      ]
-    },
     "targetIpList": {
-      "label": "手工录入(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔\n(Manual Input:(cloud area id:ip)\nex: 82:172.1.2.3, separated by one of[,;] or a line break when there are few IPs)",
+      "label": "手工录入(云区域ID:IP)(Manual Input:(cloud area id:ip)",
       "default": "",
       "placeholder": "请输入目标 IP 列表(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔\n(Please input target IP list:(cloud area id:ip)\nex: 82:172.1.2.3, separated by one of[,;] or a line break when there are few IPs)",
       "desc": "云区域ID:IP\n如：82:172.1.2.3\n多个ip之间用,;换行符中的任意一个进行分隔((cloud area id:ip)\nex: 82:172.1.2.3, separated by one of[,;] or a line break when there are few IPs)",
       "type": "vuex-textarea",
-      "required": true,
+      "required": false,
       "disabled": false,
       "hidden": false,
-      "isSensitive": false,
-      "rely": {
-        "operation": "AND",
-        "expression": [
-          {
-            "key": "targetEnvType",
-            "value": "MANUAL"
-          }
-        ]
-      }
+      "isSensitive": false
     },
     "dynamicGroupIdList": {
       "label": "动态分组ID列表(Dynamic Group IDs)",
@@ -133,19 +104,10 @@
       "placeholder": "请输入动态分组ID（从CMDB获取）列表\n如：brcfabc2si9h3j4v3qb1，多个ID之间用,;换行符中的任意一个进行分隔\n(Please input Dynamic Group IDs (Can be acquired from CMDB),ex: brcfabc2si9h3j4v3qb1, separated by one of[,;] or a line break when there are few IDs)",
       "desc": "动态分组ID\n如：brcfabc2si9h3j4v3qb1\n多个ID之间用,;换行符中的任意一个进行分隔\n(Dynamic Group IDs, ex:brcfabc2si9h3j4v3qb1, separated by one of[,;] or a line break when there are few IDs)",
       "type": "vuex-textarea",
-      "required": true,
+      "required": false,
       "disabled": false,
       "hidden": false,
-      "isSensitive": false,
-      "rely": {
-        "operation": "AND",
-        "expression": [
-          {
-            "key": "targetEnvType",
-            "value": "DYNAMIC_GROUP"
-          }
-        ]
-      }
+      "isSensitive": false
     }
   }
 }
