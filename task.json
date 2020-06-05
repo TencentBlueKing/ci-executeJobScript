@@ -9,17 +9,17 @@
   },
   "input": {
     "bizId": {
-      "label": "业务 ID",
+      "label": "业务 ID(App ID)",
       "default": "",
       "type": "vuex-input",
-      "desc": "Job 中登记的业务 ID",
+      "desc": "Job 中登记的业务 ID(App ID in Job platform)",
       "required": true,
       "disabled": false,
       "hidden": false,
       "isSensitive": false
     },
     "scriptType": {
-      "label": "脚本类型",
+      "label": "脚本类型(Script Type)",
       "default": "1",
       "placeholder": "",
       "type": "enum-input",
@@ -52,7 +52,7 @@
       "isSensitive": false
     },
     "scriptContent": {
-      "label": "脚本内容",
+      "label": "脚本内容(Script Content)",
       "default": "",
       "placeholder": "",
       "type": "atom-ace-editor",
@@ -63,21 +63,21 @@
       "isSensitive": false
     },
     "scriptParam": {
-      "label": "脚本参数",
+      "label": "脚本参数(Script Parameters)",
       "default": "",
-      "desc": "脚本执行参数，多个参数用空格分隔。示例: param1 param2",
+      "desc": "脚本执行参数，多个参数用空格分隔。示例: param1 param2(Script Parameters, separated by space, ex:param1 param2)",
       "type": "vuex-input",
       "required": false
     },
     "timeout": {
-      "label": "超时时间",
+      "label": "超时时间(Script Timeout)",
       "default": "1000",
       "type": "vuex-input",
-      "desc": "请输入脚本执行超时时间，单位为秒，范围60-72000，默认1000",
+      "desc": "请输入脚本执行超时时间，单位为秒，范围60-72000，默认1000(Please input script timeout, time unit:second, range:60-72000, default:1000)",
       "required": true
     },
     "account": {
-      "label": "执行账号",
+      "label": "执行账号(Account)",
       "default": "root",
       "placeholder": "",
       "type": "vuex-input",
@@ -87,41 +87,27 @@
       "hidden": false,
       "isSensitive": false
     },
-    "targetEnvType": {
-      "label": "目标机(非编译机)",
-      "default": "MANUAL",
-      "type": "enum-input",
-      "required": true,
-      "desc": "手工录入: 手工录入节点云区域和 IP 地址  ",
-      "disabled": false,
-      "hidden": false,
-      "isSensitive": false,
-      "list": [
-        {
-          "label": "手工录入",
-          "value": "MANUAL"
-        }
-      ]
-    },
     "targetIpList": {
-      "label": "手工录入(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔",
+      "label": "手工录入(云区域ID:IP)(Manual Input:(cloud area id:ip)",
       "default": "",
-      "placeholder": "请输入目标 IP 列表(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔",
-      "desc": "云区域ID:IP\n如：82:172.1.2.3\n多个ip之间用,;换行符中的任意一个进行分隔",
+      "placeholder": "请输入目标 IP 列表(云区域ID:IP)\n如：82:172.1.2.3，多个ip之间用,;换行符中的任意一个进行分隔\n(Please input target IP list:(cloud area id:ip)\nex: 82:172.1.2.3, separated by one of[,;] or a line break when there are few IPs)",
+      "desc": "云区域ID:IP\n如：82:172.1.2.3\n多个ip之间用,;换行符中的任意一个进行分隔((cloud area id:ip)\nex: 82:172.1.2.3, separated by one of[,;] or a line break when there are few IPs)",
       "type": "vuex-textarea",
-      "required": true,
+      "required": false,
       "disabled": false,
       "hidden": false,
-      "isSensitive": false,
-      "rely": {
-        "operation": "AND",
-        "expression": [
-          {
-            "key": "targetEnvType",
-            "value": "MANUAL"
-          }
-        ]
-      }
+      "isSensitive": false
+    },
+    "dynamicGroupIdList": {
+      "label": "动态分组ID列表(Dynamic Group IDs)",
+      "default": "",
+      "placeholder": "请输入动态分组ID（从CMDB获取）列表\n如：brcfabc2si9h3j4v3qb1，多个ID之间用,;换行符中的任意一个进行分隔\n(Please input Dynamic Group IDs (Can be acquired from CMDB),ex: brcfabc2si9h3j4v3qb1, separated by one of[,;] or a line break when there are few IDs)",
+      "desc": "动态分组ID\n如：brcfabc2si9h3j4v3qb1\n多个ID之间用,;换行符中的任意一个进行分隔\n(Dynamic Group IDs, ex:brcfabc2si9h3j4v3qb1, separated by one of[,;] or a line break when there are few IDs)",
+      "type": "vuex-textarea",
+      "required": false,
+      "disabled": false,
+      "hidden": false,
+      "isSensitive": false
     }
   }
 }

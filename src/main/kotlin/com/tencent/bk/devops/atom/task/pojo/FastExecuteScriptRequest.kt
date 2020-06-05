@@ -34,6 +34,9 @@ data class FastExecuteScriptRequest(
     @JsonProperty("script_type")
     val scriptType: Int,
 
+    @JsonProperty("custom_query_id")
+    val dynamicGroupIdList: List<String>,
+
     @JsonProperty("ip_list")
     val ipList: List<IpDTO>
 )
