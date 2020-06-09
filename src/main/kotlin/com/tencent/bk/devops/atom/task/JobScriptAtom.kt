@@ -1,6 +1,8 @@
 package com.tencent.bk.devops.atom.task
 
 import com.tencent.bk.devops.atom.AtomContext
+import com.tencent.bk.devops.atom.common.Status
+import com.tencent.bk.devops.atom.pojo.AtomResult
 import com.tencent.bk.devops.atom.spi.AtomService
 import com.tencent.bk.devops.atom.spi.TaskAtom
 import com.tencent.bk.devops.atom.task.pojo.FastExecuteScriptRequest
@@ -24,8 +26,9 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
     override fun execute(atomContext: AtomContext<InnerJobParam>) {
         val param = atomContext.param
+        val result = atomContext.result
         logger.info("param:${JsonUtil.toJson(param)}")
-        exceute(param)
+        exceute(param, result)
         logger.info("atom run success")
     }
 
@@ -33,7 +36,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         val logger = LoggerFactory.getLogger(JobScriptAtom::class.java)
     }
 
-    fun exceute(param: InnerJobParam) {
+    fun exceute(param: InnerJobParam, result: AtomResult) {
         logger.info("开始执行脚本(Begin to execute script)")
         val esbHost = getConfigValue(Keys.ESB_HOST, param)
         val jobHost = getConfigValue(Keys.JOB_HOST, param)
@@ -47,11 +50,12 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         this.appId = appId!!
         this.appSecret = appSecret!!
 
-        fastExecuteScript(param)
+        fastExecuteScript(param, result)
     }
 
     private fun fastExecuteScript(
-        param: InnerJobParam
+        param: InnerJobParam,
+        result: AtomResult
     ) {
         val bizId = param.bizId
         val buildId = param.pipelineBuildId
@@ -117,8 +121,11 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
             )
 
             logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
+            result.status = Status.success
         } catch (e: Exception) {
             logger.error("Job API invoke failed", e)
+            result.status = Status.failure
+            result.message = e.message
             if (e.message != null && e.message!!.contains("permission")) {
                 logger.info("====================================================")
                 logger.info("看这里！(Attention Please!)")
