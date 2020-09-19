@@ -8,5 +8,3 @@
 - ESB_CERTIFICATE: 蓝鲸平台https私有证书公钥，若使用http或https证书为商业CA颁发的证书（浏览器域名左边的锁标志为关闭的锁表示连接安全）则无须配置
 - JOB_HOST: 蓝鲸JOB独立地址，比如https://job.bk.com
   
-
-
