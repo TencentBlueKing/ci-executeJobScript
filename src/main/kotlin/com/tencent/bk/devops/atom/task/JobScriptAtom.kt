@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils
 import java.nio.charset.Charset
 import java.util.Base64
 import org.slf4j.LoggerFactory
+import java.lang.IndexOutOfBoundsException
 
 @AtomService(paramClass = InnerJobParam::class)
 class JobScriptAtom : TaskAtom<InnerJobParam> {
@@ -81,7 +82,13 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         } else {
             val ipList = param.targetIpList.trim().split(",", "，", ";", "\n").filter(StringUtils::isNotBlank).toList()
             logger.info("targetIpList:$ipList")
-            ipDTOList = ipList.map { IpDTO(it.split(":", "：")[1].trim(), it.split(":", "：")[0].trim().toLong()) }
+            try {
+                ipDTOList = ipList.map { IpDTO(it.split(":", "：")[1].trim(), it.split(":", "：")[0].trim().toLong()) }
+            } catch (e: IndexOutOfBoundsException) {
+                result.status = Status.failure
+                result.message = "IP输入格式不正确，请检查，正确格式：云区域ID:IP，例如0:192.168.1.1 (Please check IP format, right IP format:cloud area id:ip, ex:0:192.168.1.1)"
+                return
+            }
         }
         if (dynamicGroupIdListStr.isEmpty()) {
             logger.info("dynamicGroupIdListStr is empty")
