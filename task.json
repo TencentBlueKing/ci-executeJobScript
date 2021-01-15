@@ -1,5 +1,5 @@
 {
-  "atomCode": "executeJobScript",
+  "atomCode": "bkci_executeJobScript",
   "execution": {
     "packagePath": "executeJobScript-jar-with-dependencies.jar",
     "language": "java",
