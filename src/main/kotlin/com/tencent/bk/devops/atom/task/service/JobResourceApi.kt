@@ -1,4 +1,3 @@
-
 package com.tencent.bk.devops.atom.task.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -23,6 +22,7 @@ class JobResourceApi {
 
     fun fastExecuteScript(executeScriptRequest: FastExecuteScriptRequest, jobHost: String): Long {
         val url = "$jobHost/api/c/compapi/v2/job/fast_execute_script/"
+        logger.info("request url:$url")
         val requestBody = objectMapper.writeValueAsString(executeScriptRequest)
         val taskInstanceId = sendTaskRequest(requestBody, url)
         if (taskInstanceId <= 0) {
@@ -44,11 +44,11 @@ class JobResourceApi {
         try {
             val url =
                 "$jobHost/api/c/compapi/v2/job/get_job_instance_status/?bk_app_code=$appId&bk_app_secret=$appSecret&bk_username=$operator&bk_biz_id=$bizId&job_instance_id=$taskInstanceId"
-//            logger.info("Get request url: $url")
+            val urlWithoutSecret =
+                "$jobHost/api/c/compapi/v2/job/get_job_instance_status/?bk_app_code=$appId&bk_app_secret=***&bk_username=$operator&bk_biz_id=$bizId&job_instance_id=$taskInstanceId"
+            logger.info("Get request url: $urlWithoutSecret")
             OkhttpUtils.doGet(url).use { resp ->
                 val responseStr = resp.body()!!.string()
-//            val responseStr = HttpUtils.get(url)
-//                logger.info("responseBody: $responseStr")
                 val response: Map<String, Any> = jacksonObjectMapper().readValue(responseStr)
                 if (response["code"] == 0) {
                     val responseData = response["data"] as Map<String, Any>
