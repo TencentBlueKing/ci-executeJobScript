@@ -51,6 +51,16 @@
       "hidden": false,
       "isSensitive": false
     },
+    "tipsNotDel": {
+      "type": "tips",
+      "label": "",
+      "tipStr": "请勿删除脚本模板首行内容，可在脚本末尾处编写您的业务代码，建议在脚本首尾及关键分支位置打印日志(Please do not delete the first line of script template. You can add your script content to the end of the script template. Logging at the start, end and key point of script is recommended.)"
+    },
+    "tipsFailHandle": {
+      "type": "tips",
+      "label": "",
+      "tipStr": "若执行失败，请根据使用的蓝鲸版本点击插件日志中对应的链接前往作业平台查看脚本失败详情，若为脚本执行超时失败，请检查脚本自身逻辑有无死循环或耗时操作，若正常逻辑耗时较长请调整插件的超时参数(If script fail, please click the link in the log and go to Job to check the detail of script failure. If script fail because of timeout, please check whether there is a dead loop or long-time operation in script content. If the normal business logic requires long time, please adjust the timeout parameter of this plugin.)"
+    },
     "scriptContent": {
       "label": "脚本内容(Script Content)",
       "default": "",

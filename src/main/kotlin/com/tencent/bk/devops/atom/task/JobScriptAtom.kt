@@ -115,8 +115,8 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
         try {
             val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.esbApiHost)
+            logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
             val startTime = System.currentTimeMillis()
-
             checkStatus(
                 bizId = bizId,
                 startTime = startTime,
@@ -124,11 +124,11 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
                 taskInstanceId = taskInstanceId,
                 operator = operator,
                 buildId = buildId,
-                jobHost = esbApiHost
+                jobHost = esbApiHost,
+                result = result
             )
 
             logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
-            result.status = Status.success
         } catch (e: Exception) {
             logger.error("Job API invoke failed", e)
             result.status = Status.failure
@@ -151,21 +151,26 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         operator: String,
         buildId: String,
         taskId: String,
-        jobHost: String
+        jobHost: String,
+        result: AtomResult
     ) {
 
-        var jobSuccess = true
+        var needContinue = true
 
-        while (jobSuccess) {
+        while (needContinue) {
             Thread.sleep(2000)
             val taskResult = JobUtils.getTaskResult(appId, appSecret, bizId, taskInstanceId, operator, jobHost)
+            logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
             if (taskResult.isFinish) {
+                needContinue = false
                 if (taskResult.success) {
                     logger.info("[$buildId]|SUCCEED|taskInstanceId=$taskId|${taskResult.msg}")
-                    jobSuccess = false
                 } else {
                     logger.info("[$buildId]|FAIL|taskInstanceId=$taskId|${taskResult.msg}")
-                    throw RuntimeException("job execute fail, mssage:${taskResult.msg}")
+                    logger.info("脚本本身执行失败(Script failure)：${taskResult.msg}")
+                    result.status = Status.failure
+                    result.message =
+                        "脚本执行失败，请根据使用的蓝鲸版本点击插件日志中对应的链接前往作业平台查看脚本失败详情，作业平台以脚本最后一条语句的返回码为0来判断脚本为执行成功状态，请检查脚本本身业务逻辑，若为脚本执行超时失败，请检查脚本自身逻辑有无死循环或耗时操作，若正常逻辑耗时较长请调整插件的超时参数（默认1000s）(Script fail, please click the link and go to Job to check the detail of script failure, Job judges that the script is executed successfully by the return code of the last line of the script as 0. Please check the content of script. If script fail because of timeout, please check whether there is a dead loop or long-time operation in script content. If the normal business logic requires long time, please adjust the timeout parameter of this plugin.)"
                 }
             } else {
                 logger.info("执行中/Waiting for job:$taskInstanceId", taskId)
