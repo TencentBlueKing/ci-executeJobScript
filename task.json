@@ -61,6 +61,17 @@
       "label": "",
       "tipStr": "若执行失败，请根据使用的蓝鲸版本点击插件日志中对应的链接前往作业平台查看脚本失败详情，若为脚本执行超时失败，请检查脚本自身逻辑有无死循环或耗时操作，若正常逻辑耗时较长请调整插件的超时参数(If script fail, please click the link in the log and go to Job to check the detail of script failure. If script fail because of timeout, please check whether there is a dead loop or long-time operation in script content. If the normal business logic requires long time, please adjust the timeout parameter of this plugin.)"
     },
+    "scriptContent": {
+      "label": "脚本内容(Script Content)",
+      "default": "",
+      "placeholder": "",
+      "type": "atom-ace-editor",
+      "desc": "兼容老版本插件保留下的字段",
+      "required": false,
+      "disabled": false,
+      "hidden": true,
+      "isSensitive": false
+    },
     "shellScriptContent": {
       "type": "atom-ace-editor",
       "label": "脚本内容（支持日志环境变量提取）",

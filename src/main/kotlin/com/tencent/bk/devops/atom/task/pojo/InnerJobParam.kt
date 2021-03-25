@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode
 class InnerJobParam : AtomBaseParam() {
     val bizId: String = ""
     val scriptType: String = ""
+    val scriptContent: String = ""
     // shell脚本内容
     var shellScriptContent: String = ""
     // bat脚本内容

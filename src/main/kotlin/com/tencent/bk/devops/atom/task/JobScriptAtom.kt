@@ -84,6 +84,10 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
                 ""
             }
         }
+        // 兼容老版本插件字段
+        if (StringUtils.isBlank(scriptContent)) {
+            scriptContent = param.scriptContent
+        }
         scriptContent =
             Base64.getEncoder().encodeToString(scriptContent.toByteArray(Charset.forName("UTF-8")))
         val scriptParam = Base64.getEncoder().encodeToString(param.scriptParam.toByteArray(Charset.forName("UTF-8")))
