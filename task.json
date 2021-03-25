@@ -61,16 +61,100 @@
       "label": "",
       "tipStr": "若执行失败，请根据使用的蓝鲸版本点击插件日志中对应的链接前往作业平台查看脚本失败详情，若为脚本执行超时失败，请检查脚本自身逻辑有无死循环或耗时操作，若正常逻辑耗时较长请调整插件的超时参数(If script fail, please click the link in the log and go to Job to check the detail of script failure. If script fail because of timeout, please check whether there is a dead loop or long-time operation in script content. If the normal business logic requires long time, please adjust the timeout parameter of this plugin.)"
     },
-    "scriptContent": {
-      "label": "脚本内容(Script Content)",
-      "default": "",
-      "placeholder": "",
+    "shellScriptContent": {
       "type": "atom-ace-editor",
-      "desc": "",
+      "label": "脚本内容（支持日志环境变量提取）",
+      "desc": "将会在目标服务器的/usr/local/gse/gseagent目录下执行本脚本，脚本中可执行\"echo(不同脚本类型对应的打印命令) \"BK_CI_SETENV:变量名=变量值BK_CI_SETENV_END\" \"向下游插件输出流水线环境变量，【需要注意】作业平台支持的日志大小上限为5MB，超出部分将无法被解析",
       "required": true,
       "disabled": false,
       "hidden": false,
-      "isSensitive": false
+      "isSensitive": true,
+      "default": "#!/bin/bash\n\nanynowtime=\"date +'%Y-%m-%d %H:%M:%S'\"\nNOW=\"echo [\\`$anynowtime\\`][PID:$$]\"\n\n##### 可在脚本开始运行时调用，打印当时的时间戳及PID。\nfunction job_start\n{\n    echo \"`eval $NOW` job_start\"\n}\n\n##### 可在脚本执行成功的逻辑分支处调用，打印当时的时间戳及PID。\nfunction job_success\n{\n    MSG=\"$*\"\n    echo \"`eval $NOW` job_success:[$MSG]\"\n    exit 0\n}\n\n##### 可在脚本执行失败的逻辑分支处调用，打印当时的时间戳及PID。\nfunction job_fail\n{\n    MSG=\"$*\"\n    echo \"`eval $NOW` job_fail:[$MSG]\"\n    exit 1\n}\n\njob_start\n\n###### 可在此处开始编写您的脚本逻辑代码\n###### 作业平台中执行脚本成功和失败的标准只取决于脚本最后一条执行语句的返回值\n###### 如果返回值为0，则认为此脚本执行成功，如果非0，则认为脚本执行失败",
+      "rely": {
+        "operation": "AND",
+        "expression": [
+          {
+            "key": "scriptType",
+            "value": "1"
+          }
+        ]
+      }
+    },
+    "batScriptContent": {
+      "type": "atom-ace-editor",
+      "label": "脚本内容（支持日志环境变量提取）",
+      "desc": "将会在目标服务器的/usr/local/gse/gseagent目录下执行本脚本，脚本中可执行\"echo(不同脚本类型对应的打印命令) \"BK_CI_SETENV:变量名=变量值BK_CI_SETENV_END\" \"向下游插件输出流水线环境变量，【需要注意】作业平台支持的日志大小上限为5MB，超出部分将无法被解析",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "isSensitive": true,
+      "default": "@echo on\nsetlocal enabledelayedexpansion\ncall:job_start\n\nREM 可在此处开始编写您的脚本逻辑代码\nREM 作业平台中执行脚本成功和失败的标准只取决于脚本最后一条执行语句的返回值\nREM 如果返回值为0，则认为此脚本执行成功，如果非0，则认为脚本执行失败\n\n\n\nREM 函数定定义区域，不要把正文写到函数区下面\ngoto:eof\nREM 可在脚本开始运行时调用，打印当时的时间戳及PID。\n:job_start\n    set cu_time=[%date:~0,10% %time:~0,8%]\n    for /F \"skip=3 tokens=2\" %%i in ('tasklist /v /FI \"IMAGENAME eq cmd.exe\" /FI \"STATUS eq Unknown\"') do (\n        set pid=[PID:%%i]\n        goto:break\n    )\n    :break\n    echo %cu_time%%pid% job_start\n    goto:eof\n\nREM 可在脚本执行成功的逻辑分支处调用，打印当时的时间戳及PID。\n:job_success\n    set cu_time=[%date:~0,10% %time:~0,8%]\n    for /F \"skip=3 tokens=2\" %%i in ('tasklist /v /FI \"IMAGENAME eq cmd.exe\" /FI \"STATUS eq Unknown\"') do (\n        set pid=[PID:%%i]\n        goto:break\n    )\n    :break\n    echo %cu_time%%pid% job_success:[%*]\n    exit 0\n\nREM 可在脚本执行失败的逻辑分支处调用，打印当时的时间戳及PID。\n:job_fail\n    set cu_time=[%date:~0,10% %time:~0,8%]\n    for /F \"skip=3 tokens=2\" %%i in ('tasklist /v /FI \"IMAGENAME eq cmd.exe\" /FI \"STATUS eq Unknown\"') do (\n        set pid=[PID:%%i]\n        goto:break\n    )\n    :break\n    echo %cu_time%%pid% job_fail:[%*]\n    exit 1\n",
+      "rely": {
+        "operation": "AND",
+        "expression": [
+          {
+            "key": "scriptType",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    "perlScriptContent": {
+      "type": "atom-ace-editor",
+      "label": "脚本内容（支持日志环境变量提取）",
+      "desc": "将会在目标服务器的/usr/local/gse/gseagent目录下执行本脚本，脚本中可执行\"echo(不同脚本类型对应的打印命令) \"BK_CI_SETENV:变量名=变量值BK_CI_SETENV_END\" \"向下游插件输出流水线环境变量，【需要注意】作业平台支持的日志大小上限为5MB，超出部分将无法被解析",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "isSensitive": true,
+      "default": "#!/usr/bin/perl\n\nuse strict;\n\nsub job_localtime {\n    my @n = localtime();\n    return sprintf(\"%04d-%02d-%02d %02d:%02d:%02d\",$n[5]+1900,$n[4]+1,$n[3], $n[2], $n[1], $n[0] );\n}\n\n##### 可在脚本开始运行时调用，打印当时的时间戳及PID。\nsub job_start {\n    print \"[\",&job_localtime,\"][PID:$$] job_start\n\";\n}\n\n##### 可在脚本执行成功的逻辑分支处调用，打印当时的时间戳及PID。\nsub job_success {\n    print \"[\",&job_localtime,\"][PID:$$] job_success:[@_]\n\";\n    exit 0;\n}\n\n##### 可在脚本执行失败的逻辑分支处调用，打印当时的时间戳及PID。\nsub job_fail {\n    print \"[\",&job_localtime,\"][PID:$$] job_fail:[@_]\n\";\n    exit 1;\n}\n\njob_start;\n\n###### 可在此处开始编写您的脚本逻辑代码\n###### 如果返回值为0，则认为此脚本执行成功，如果非0，则认为脚本执行失败\n",
+      "rely": {
+        "operation": "AND",
+        "expression": [
+          {
+            "key": "scriptType",
+            "value": "3"
+          }
+        ]
+      }
+    },
+    "pythonScriptContent": {
+      "type": "atom-ace-editor",
+      "label": "脚本内容（支持日志环境变量提取）",
+      "desc": "将会在目标服务器的/usr/local/gse/gseagent目录下执行本脚本，脚本中可执行\"echo(不同脚本类型对应的打印命令) \"BK_CI_SETENV:变量名=变量值BK_CI_SETENV_END\" \"向下游插件输出流水线环境变量，【需要注意】作业平台支持的日志大小上限为5MB，超出部分将无法被解析",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "isSensitive": true,
+      "default": "#!/usr/bin/env python\n# -*- coding: utf8 -*-\n\nimport datetime\nimport os\nimport sys\n\ndef _now(format=\"%Y-%m-%d %H:%M:%S\"):\n    return datetime.datetime.now().strftime(format)\n\n##### 可在脚本开始运行时调用，打印当时的时间戳及PID。\ndef job_start():\n    print \"[%s][PID:%s] job_start\" % (_now(), os.getpid())\n\n##### 可在脚本执行成功的逻辑分支处调用，打印当时的时间戳及PID。\ndef job_success(msg):\n    print \"[%s][PID:%s] job_success:[%s]\" % (_now(), os.getpid(), msg)\n    sys.exit(0)\n\n##### 可在脚本执行失败的逻辑分支处调用，打印当时的时间戳及PID。\ndef job_fail(msg):\n    print \"[%s][PID:%s] job_fail:[%s]\" % (_now(), os.getpid(), msg)\n    sys.exit(1)\n\nif __name__ == '__main__':\n\n    job_start()\n\n###### 可在此处开始编写您的脚本逻辑代码\n###### iJobs中执行脚本成功和失败的标准只取决于脚本最后一条执行语句的返回值\n###### 如果返回值为0，则认为此脚本执行成功，如果非0，则认为脚本执行失败\n",
+      "rely": {
+        "operation": "AND",
+        "expression": [
+          {
+            "key": "scriptType",
+            "value": "4"
+          }
+        ]
+      }
+    },
+    "powershellScriptContent": {
+      "type": "atom-ace-editor",
+      "label": "脚本内容（支持日志环境变量提取）",
+      "desc": "将会在目标服务器的/usr/local/gse/gseagent目录下执行本脚本，脚本中可执行\"echo(不同脚本类型对应的打印命令) \"BK_CI_SETENV:变量名=变量值BK_CI_SETENV_END\" \"向下游插件输出流水线环境变量，【需要注意】作业平台支持的日志大小上限为5MB，超出部分将无法被解析",
+      "required": true,
+      "disabled": false,
+      "hidden": false,
+      "isSensitive": true,
+      "default": "##### 可在脚本开始运行时调用，打印当时的时间戳及PID。\nfunction job_start\n{\n    $cu_date = Get-Date -Format \"yyyy-MM-dd HH:mm:ss\"\n    \"[{0}][PID:{1}] job_start\" -f $cu_date,$pid\n}\n\n##### 可在脚本执行成功的逻辑分支处调用，打印当时的时间戳及PID。\nfunction job_success\n{\n    $cu_date = Get-Date -Format \"yyyy-MM-dd HH:mm:ss\"\n    if($args.count -ne 0)\n    {\n        $args | foreach {$arg_str=$arg_str + \" \" + $_}\n        \"[{0}][PID:{1}] job_success:[{2}]\" -f $cu_date,$pid,$arg_str.TrimStart(' ')\n    }\n    else\n    {\n        \"[{0}][PID:{1}] job_success:[]\" -f $cu_date,$pid\n    }\n    exit 0\n}\n\n##### 可在脚本执行失败的逻辑分支处调用，打印当时的时间戳及PID。\nfunction job_fail\n{\n    $cu_date = Get-Date -Format \"yyyy-MM-dd HH:mm:ss\"\n    if($args.count -ne 0)\n    {\n        $args | foreach {$arg_str=$arg_str + \" \" + $_}\n        \"[{0}][PID:{1}] job_fail:[{2}]\" -f $cu_date,$pid,$arg_str.TrimStart(' ')\n    }\n    else\n    {\n        \"[{0}][PID:{1}] job_fail:[]\" -f $cu_date,$pid\n    }\n    exit 1\n}\n\njob_start\n\n###### 可在此处开始编写您的脚本逻辑代码\n###### 作业平台中执行脚本成功和失败的标准只取决于脚本最后一条执行语句的返回值\n###### 如果返回值为0，则认为此脚本执行成功，如果非0，则认为脚本执行失败\n",
+      "rely": {
+        "operation": "AND",
+        "expression": [
+          {
+            "key": "scriptType",
+            "value": "5"
+          }
+        ]
+      }
     },
     "scriptParam": {
       "label": "脚本参数(Script Parameters)",

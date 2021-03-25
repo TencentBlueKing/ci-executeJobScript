@@ -64,8 +64,28 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         val targetAccount = param.account
         val timeout = 0L + (param.timeout ?: 1000)
         var operator = param.pipelineStartUserName
-        val scriptContent =
-            Base64.getEncoder().encodeToString(param.scriptContent.toByteArray(Charset.forName("UTF-8")))
+        var scriptContent = when (param.scriptType) {
+            "1" -> {
+                param.shellScriptContent
+            }
+            "2" -> {
+                param.batScriptContent
+            }
+            "3" -> {
+                param.perlScriptContent
+            }
+            "4" -> {
+                param.pythonScriptContent
+            }
+            "5" -> {
+                param.powershellScriptContent
+            }
+            else -> {
+                ""
+            }
+        }
+        scriptContent =
+            Base64.getEncoder().encodeToString(scriptContent.toByteArray(Charset.forName("UTF-8")))
         val scriptParam = Base64.getEncoder().encodeToString(param.scriptParam.toByteArray(Charset.forName("UTF-8")))
 
         val lastModifyUser = param.pipelineUpdateUserName
