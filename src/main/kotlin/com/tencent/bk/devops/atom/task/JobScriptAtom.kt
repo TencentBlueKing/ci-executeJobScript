@@ -12,10 +12,9 @@ import com.tencent.bk.devops.atom.task.utils.JobUtils
 import com.tencent.bk.devops.atom.task.utils.Keys
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import org.apache.commons.lang3.StringUtils
-import java.nio.charset.Charset
-import java.util.Base64
 import org.slf4j.LoggerFactory
-import java.lang.IndexOutOfBoundsException
+import java.nio.charset.Charset
+import java.util.*
 
 @AtomService(paramClass = InnerJobParam::class)
 class JobScriptAtom : TaskAtom<InnerJobParam> {
@@ -54,6 +53,13 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         fastExecuteScript(param, result)
     }
 
+    private fun printLink(bizId: String, taskInstanceId: Long, jobHost: String) {
+        logger.info("对接蓝鲸企业版3.x/社区版6.x中的作业平台请点击以下链接查看详情：")
+        logger.info(JobUtils.getV3DetailUrl(bizId, taskInstanceId, jobHost))
+        logger.info("对接蓝鲸企业版2.x/社区版5.x中的作业平台请点击以下链接查看详情：")
+        logger.info(JobUtils.getV2DetailUrl(bizId, taskInstanceId, jobHost))
+    }
+
     private fun fastExecuteScript(
         param: InnerJobParam,
         result: AtomResult
@@ -63,6 +69,11 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         val taskId = param.pipelineTaskId
         val targetAccount = param.account
         val timeout = 0L + (param.timeout ?: 1000)
+        if (timeout < 60L || timeout > 72000) {
+            result.status = Status.failure
+            result.message = "timeout参数不合法，必须为60-72000之间的整数"
+            return
+        }
         var operator = param.pipelineStartUserName
         var scriptContent = when (param.scriptType) {
             "1" -> {
@@ -139,7 +150,7 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
         try {
             val taskInstanceId = JobUtils.fastExecuteScript(fastExecuteScriptReq, this.esbApiHost)
-            logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
+            printLink(bizId, taskInstanceId, jobHost)
             val startTime = System.currentTimeMillis()
             checkStatus(
                 bizId = bizId,
@@ -148,11 +159,9 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
                 taskInstanceId = taskInstanceId,
                 operator = operator,
                 buildId = buildId,
-                jobHost = esbApiHost,
                 result = result
             )
-
-            logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
+            printLink(bizId, taskInstanceId, jobHost)
         } catch (e: Exception) {
             logger.error("Job API invoke failed", e)
             result.status = Status.failure
@@ -175,7 +184,6 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
         operator: String,
         buildId: String,
         taskId: String,
-        jobHost: String,
         result: AtomResult
     ) {
 
@@ -183,8 +191,8 @@ class JobScriptAtom : TaskAtom<InnerJobParam> {
 
         while (needContinue) {
             Thread.sleep(2000)
-            val taskResult = JobUtils.getTaskResult(appId, appSecret, bizId, taskInstanceId, operator, jobHost)
-            logger.info(JobUtils.getDetailUrl(bizId, taskInstanceId, jobHost))
+            val taskResult = JobUtils.getTaskResult(appId, appSecret, bizId, taskInstanceId, operator, esbApiHost)
+            printLink(bizId, taskInstanceId, jobHost)
             if (taskResult.isFinish) {
                 needContinue = false
                 if (taskResult.success) {

@@ -39,13 +39,13 @@ class JobResourceApi {
         bizId: String,
         taskInstanceId: Long,
         operator: String,
-        jobHost: String
+        esbHost: String
     ): TaskResult {
         try {
             val url =
-                "$jobHost/api/c/compapi/v2/job/get_job_instance_status/?bk_app_code=$appId&bk_app_secret=$appSecret&bk_username=$operator&bk_biz_id=$bizId&job_instance_id=$taskInstanceId"
+                "$esbHost/api/c/compapi/v2/job/get_job_instance_status/?bk_app_code=$appId&bk_app_secret=$appSecret&bk_username=$operator&bk_biz_id=$bizId&job_instance_id=$taskInstanceId"
             val urlWithoutSecret =
-                "$jobHost/api/c/compapi/v2/job/get_job_instance_status/?bk_app_code=$appId&bk_app_secret=***&bk_username=$operator&bk_biz_id=$bizId&job_instance_id=$taskInstanceId"
+                "$esbHost/api/c/compapi/v2/job/get_job_instance_status/?bk_app_code=$appId&bk_app_secret=***&bk_username=$operator&bk_biz_id=$bizId&job_instance_id=$taskInstanceId"
             logger.info("Get request url: $urlWithoutSecret")
             OkhttpUtils.doGet(url).use { resp ->
                 val responseStr = resp.body()!!.string()
